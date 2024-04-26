@@ -1,10 +1,11 @@
+from django import forms
 from django.contrib.auth import authenticate, login, logout
 from django.db import IntegrityError
 from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import render
 from django.urls import reverse
 
-from .models import User
+from .models import Listing, User
 
 
 def index(request):
@@ -63,7 +64,28 @@ def register(request):
         return render(request, "auctions/register.html")
 
 
+class NewListingForm(forms.ModelForm):
+    class Meta:
+        model = Listing
+        fields = ('title', 'description', 'price', 'image', 'category')
 
+    description = forms.CharField(widget=forms.Textarea)
+    
 
 def create(request):
-    return render(request, "auctions/create.html")
+    if request.method == "POST":
+        form = NewListingForm(request.POST)
+
+        if form.is_valid():
+            form.save()
+            return HttpResponse("Form Success")
+        else:
+            # if form is invalid re render form with existing information
+            return render(request, "auctions/create", {
+                "form": form
+            })
+
+
+    return render(request, "auctions/create.html", {
+        "form": NewListingForm()
+    })

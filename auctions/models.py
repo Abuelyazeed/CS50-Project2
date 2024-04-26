@@ -18,6 +18,8 @@ class Listing(models.Model):
     title = models.CharField(max_length=255)
     description = models.CharField(max_length=255)
     price = models.IntegerField()
-    image = models.ImageField(blank=True, null=True)
+    image = models.ImageField(upload_to='listing_images', blank=True, null=True)
     category = models.ForeignKey(Category, on_delete=models.CASCADE, blank=True, null=True, related_name="listings")
-        
+    
+    def __str__(self):
+        return f"{self.title}"
