@@ -34,5 +34,19 @@
             </div>
         </div>
     {% endfor %}
+    <div class="p-3 mb-2 bg-body-secondary">
+        <h2 class="mb-4">Categories</h2>
+        <div class="d-flex justify-content-around">
+            {% for category in categories %}
+                <div class="card text-center" style="width: 18rem;">
+                    <div class="card-body">
+                        <h5 class="card-title m-5">{{ category.name }}</h5>
+                        <p class="card-text text-body-secondary m-5">{{ category.listings.count }} listings</p>
+                        <a href="#" class="btn btn-primary mt-5">View Listings</a>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    </div>
 
 {% endblock %}

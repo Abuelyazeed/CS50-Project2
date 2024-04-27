@@ -6,13 +6,15 @@ from django.shortcuts import render
 from django.urls import reverse
 from django.contrib.auth.decorators import login_required
 
-from .models import Listing, User
+from .models import Listing, User, Category
 
 
 def index(request):
+    categories = Category.objects.all()
     listings = Listing.objects.filter(is_active=True)
     return render(request, "auctions/index.html",{
-        "listings": listings
+        "listings": listings,
+        "categories": categories
     })
 
 class NewListingForm(forms.ModelForm):
