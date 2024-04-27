@@ -21,6 +21,7 @@ class Listing(models.Model):
     price = models.IntegerField()
     image = models.ImageField(upload_to='listing_images', blank=True, null=True)
     category = models.ForeignKey(Category, on_delete=models.CASCADE, blank=True, null=True, related_name="listings")
+    is_active = models.BooleanField(default=True)
     owner = models.ForeignKey(User, on_delete=models.CASCADE, blank=True, null=True, related_name="listings")
     created_at = models.DateTimeField(default=datetime.now)
     

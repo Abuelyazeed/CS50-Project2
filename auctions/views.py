@@ -4,6 +4,7 @@ from django.db import IntegrityError
 from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import render
 from django.urls import reverse
+from django.contrib.auth.decorators import login_required
 
 from .models import Listing, User
 
@@ -12,6 +13,34 @@ def index(request):
     listings = Listing.objects.all()
     return render(request, "auctions/index.html",{
         "listings": listings
+    })
+
+class NewListingForm(forms.ModelForm):
+    class Meta:
+        model = Listing
+        fields = ('title', 'description', 'price', 'image', 'category')
+
+    description = forms.CharField(widget=forms.Textarea)
+    
+@login_required
+def create(request):
+    if request.method == "POST":
+        form = NewListingForm(request.POST)
+
+        if form.is_valid():
+            listing = form.save(commit=False)
+            listing.owner = request.user
+            listing.save()
+            return HttpResponseRedirect(reverse('index'))
+        else:
+            # if form is invalid re render form with existing information
+            return render(request, "auctions/create", {
+                "form": form
+            })
+
+
+    return render(request, "auctions/create.html", {
+        "form": NewListingForm()
     })
 
 
@@ -65,30 +94,3 @@ def register(request):
         return HttpResponseRedirect(reverse("index"))
     else:
         return render(request, "auctions/register.html")
-
-
-class NewListingForm(forms.ModelForm):
-    class Meta:
-        model = Listing
-        fields = ('title', 'description', 'price', 'image', 'category')
-
-    description = forms.CharField(widget=forms.Textarea)
-    
-
-def create(request):
-    if request.method == "POST":
-        form = NewListingForm(request.POST)
-
-        if form.is_valid():
-            form.save()
-            return HttpResponse("Form Success")
-        else:
-            # if form is invalid re render form with existing information
-            return render(request, "auctions/create", {
-                "form": form
-            })
-
-
-    return render(request, "auctions/create.html", {
-        "form": NewListingForm()
-    })
